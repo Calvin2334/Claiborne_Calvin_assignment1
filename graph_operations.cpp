@@ -1,9 +1,9 @@
 #include "graph_operations.h"
 #include <stdexcept>
-#include<functional>
-#include<limits>
-#include<queue>
-#include<utility>
+#include <limits>
+#include <map>
+#include <queue>
+#include <utility>
 
 Graph::Graph(int numberOfVertices){
     if (numberOfVertices <0){
