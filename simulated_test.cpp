@@ -1,88 +1,102 @@
 #include "graph_operations.h"
+#include "graph_simulator.h"
+
+#include<chrono>
+#include<map>
+#include<string>
+#include<vector>
 #include <iostream>
 
-int main() {
-    Graph graph(6);
 
-    // First component: 0, 1, 2
-    graph.addEdge(0, 1);
-    graph.addEdge(1, 2);
+void testGraph(const std::string& name, Graph& graph) {
 
-    // Second component: 3, 4
-    graph.addEdge(3, 4);
+    std::cout << "\n==============================\n";
+    std::cout << name << "\n";
+    std::cout << "Vertices: " << graph.vertexCount() << "\n";
+    std::cout << "==============================\n";
 
-    // Vertex 5 is the third component.
+    // Start measuring time
+    auto start =
+        std::chrono::high_resolution_clock::now();
 
     std::vector<std::vector<int>> components =
         connectedComponents(graph);
 
-    std::cout << "Number of components: "
+    std::vector<int> cycle =
+        oneCycle(graph);
+
+    std::map<int, std::vector<int>> paths;
+
+    if (graph.vertexCount() > 0) {
+        paths = shortestPaths(graph, 0);
+    }
+
+    // Stop measuring time
+    auto end =
+        std::chrono::high_resolution_clock::now();
+
+    auto runtime =
+        std::chrono::duration_cast<std::chrono::microseconds>(
+            end - start
+        );
+
+    std::cout << "Connected components: "
               << components.size() << "\n";
 
-    for (int i = 0;
-         i < static_cast<int>(components.size());
-         i++) {
+    std::cout << "Contains cycle: "
+              << (cycle.empty() ? "No" : "Yes")
+              << "\n";
 
-        std::cout << "Component " << i + 1 << ":";
+    std::cout << "Reachable vertices from 0: "
+              << paths.size() << "\n";
 
-        for (int vertex : components[i]) {
-            std::cout << " " << vertex;
-        }
-
-        std::cout << "\n";
-    }
-
-    // The component loop ends before the cycle test begins.
-    std::cout << "\nCycle test:\n";
-
-    Graph cycleGraph(4);
-
-    cycleGraph.addEdge(0, 1);
-    cycleGraph.addEdge(1, 2);
-    cycleGraph.addEdge(2, 3);
-    cycleGraph.addEdge(3, 0);
-
-    std::vector<int> cycle = oneCycle(cycleGraph);
-
-    if (cycle.empty()) {
-        std::cout << "No cycle found.\n";
-    } else {
-        std::cout << "Cycle found:";
-
-        for (int vertex : cycle) {
-            std::cout << " " << vertex;
-        }
-
-        std::cout << "\n";
-    }
-std::cout << "\nShortest-path test from source 0:\n";
-
-Graph pathGraph(6);
-
-pathGraph.addEdge(0,1);
-pathGraph.addEdge(0,2);
-pathGraph.addEdge(1,3);
-pathGraph.addEdge(2,4);
-pathGraph.addEdge(3,4);
-
-// Cant reach vertex 5 from 0
-
-std::map<int, std::vector<int>> paths =
-    shortestPaths(pathGraph,0);
-
-for (const auto& entry : paths) {
-    int vertex = entry.first;
-    const std::vector<int>& path = entry.second;
-
-    std::cout << "Path from "<< vertex
-              << " back to 0:";
-
-    for (int pathVertex : path) {
-        std::cout << " " << pathVertex;
-    }
-
-    std::cout << "\n";
+    std::cout << "Runtime: "
+              << runtime.count()
+              << " microseconds\n";
 }
+
+int main() {
+    std::vector<int> sizes = {
+        10,
+        100,
+        500,
+        1000
+    };
+
+    for (int n : sizes){
+
+        std::cout << "\n\n######## SIZE "
+                  << n
+                  << " ########\n";
+
+        // Cycle Graph
+        Graph cycleGraph =
+            generateCycleGraph(n);
+
+        testGraph(
+            "Cycle Graph",
+            cycleGraph
+        );
+
+        // Complete Graph
+        Graph completeGraph =
+            generateCompleteGraph(n);
+
+        testGraph(
+            "Complete Graph",
+            completeGraph
+        );
+      
+        // empty Graph
+        Graph emptygraph =
+            generateEmptyGraph(n);
+
+        testGraph(
+            "Empty Graph",
+            emptygraph
+        );        
+
+    }
 
     return 0;
 }
