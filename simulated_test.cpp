@@ -1,88 +1,71 @@
 #include "graph_operations.h"
+#include "graph_simulator.h"
+
 #include <iostream>
+#include <map>
+#include <string>
+#include <vector>
 
-int main() {
-    Graph graph(6);
+// Tests one generated graph
+void testGraph(const std::string& name, Graph& graph) {
 
-    // First component: 0, 1, 2
-    graph.addEdge(0, 1);
-    graph.addEdge(1, 2);
+    std::cout << "\n==============================\n";
+    std::cout << name << "\n";
+    std::cout << "Vertices: " << graph.vertexCount() << "\n";
+    std::cout << "==============================\n";
 
-    // Second component: 3, 4
-    graph.addEdge(3, 4);
-
-    // Vertex 5 is the third component.
-
+    // Test connected components
     std::vector<std::vector<int>> components =
         connectedComponents(graph);
 
-    std::cout << "Number of components: "
+    std::cout << "Connected components: "
               << components.size() << "\n";
 
-    for (int i = 0;
-         i < static_cast<int>(components.size());
-         i++) {
-
-        std::cout << "Component " << i + 1 << ":";
-
-        for (int vertex : components[i]) {
-            std::cout << " " << vertex;
-        }
-
-        std::cout << "\n";
-    }
-
-    // The component loop ends before the cycle test begins.
-    std::cout << "\nCycle test:\n";
-
-    Graph cycleGraph(4);
-
-    cycleGraph.addEdge(0, 1);
-    cycleGraph.addEdge(1, 2);
-    cycleGraph.addEdge(2, 3);
-    cycleGraph.addEdge(3, 0);
-
-    std::vector<int> cycle = oneCycle(cycleGraph);
+    // Test cycle detection
+    std::vector<int> cycle = oneCycle(graph);
 
     if (cycle.empty()) {
-        std::cout << "No cycle found.\n";
+        std::cout << "Contains cycle: No\n";
     } else {
-        std::cout << "Cycle found:";
-
-        for (int vertex : cycle) {
-            std::cout << " " << vertex;
-        }
-
-        std::cout << "\n";
-    }
-std::cout << "\nShortest-path test from source 0:\n";
-
-Graph pathGraph(6);
-
-pathGraph.addEdge(0,1);
-pathGraph.addEdge(0,2);
-pathGraph.addEdge(1,3);
-pathGraph.addEdge(2,4);
-pathGraph.addEdge(3,4);
-
-// Cant reach vertex 5 from 0
-
-std::map<int, std::vector<int>> paths =
-    shortestPaths(pathGraph,0);
-
-for (const auto& entry : paths) {
-    int vertex = entry.first;
-    const std::vector<int>& path = entry.second;
-
-    std::cout << "Path from "<< vertex
-              << " back to 0:";
-
-    for (int pathVertex : path) {
-        std::cout << " " << pathVertex;
+        std::cout << "Contains cycle: Yes\n";
     }
 
-    std::cout << "\n";
+    // Test shortest paths from vertex 0
+    if (graph.vertexCount() > 0) {
+
+        std::map<int, std::vector<int>> paths =
+            shortestPaths(graph, 0);
+
+        std::cout << "Reachable vertices from 0: "
+                  << paths.size() << "\n";
+    }
 }
+
+int main() {
+
+    // Test a cycle graph
+    Graph cycleGraph = generateCycleGraph(10);
+
+    testGraph(
+        "Cycle Graph (n = 10)",
+        cycleGraph
+    );
+
+    // Test a complete graph
+    Graph completeGraph = generateCompleteGraph(10);
+
+    testGraph(
+        "Complete Graph (n = 10)",
+        completeGraph
+    );
+
+    // Test an empty graph
+    Graph emptyGraph = generateEmptyGraph(10);
+
+    testGraph(
+        "Empty Graph (n = 10)",
+        emptyGraph
+    );
 
     return 0;
 }
