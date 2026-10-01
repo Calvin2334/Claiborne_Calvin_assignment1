@@ -1,12 +1,12 @@
-Assignment 1 Results 
+Assignment 1 Results
 ---------------------
 
-Graph Type 
+Graph Type
 -----------
 
-In this assignment, I created an undirect graph using an adjacency list. The graph is sotred as a vector of vector of ints. Each position in the outer vector represents a vertex, and the inner store the vertices that are adjacent to the vertex.
+In this assignment, I created an undirected graph using an adjacency list. The graph is stored as a vector of vector of ints. Each position in the outer vector represents a vertex, and the inner store the vertices that are adjacent to the vertex.
 
-Because the graph is undirected, adding an edge between the vertices u and v adds v to the adj list of u and thsi works for u as well.
+Because the graph is undirected, adding an edge between the vertices u and v adds v to the adj list of u and this works for u as well.
 
 I used adj list because its a simple way to store and traverse the neighbors of each vertex.
 
@@ -14,31 +14,101 @@ Graph Operations
 ----------------
 
 connectedComponents:
-Connected components are found using dfs. The algorithm starts from every vertex that has ont alreadybeen visited. Each DFS produces one connected component.
+Connected components are found using dfs. The algorithm starts from every vertex that has not already been visited. Each DFS produces one connected component.
 
 oneCycle:
-A cycle is found using DFS. During the search, the algorithm keeps track fo ach vertex's parent. If the search fidns a visted vertex that is not the current parent a cycle is found.
+A cycle is found using DFS. During the search, the algorithm keeps track of each vertex's parent. If the search finds a visited vertex that is not the current parent a cycle is found.
 
-shortestPahts:
+shortestPaths:
 Shortest Paths are found using Dijkstra's algorithm. Since the graph is unweighted, every edge has the same weight of 1. The algorithm stores the current distance to each vertex and uses a priority queue to process vertices.
 
-Experiments 
+Experiments
 ------------
 
 I tested three types of undirected graphs
 
-1. Cycle Graph 
-    Each vertex is connected in a cycle and the final vertex connects to the first 
+1. Cycle Graph
+    Each vertex is connected in a cycle and the final vertex connects to the first
 
 2. Complete Graph
-    Every vertex is connect to each other 
+    Every vertex is connect to each other
 
 3. Empty Graph
     The graph contains vertices but no edges
 
 
 Graph size tested:
-10 verticies
-100 verticies
-500 verticies
-1000 verticies
+10 vertices
+100 vertices
+500 vertices
+1000 vertices
+
+Performance Results
+-------------------
+
+Graph Type     Vertices     CPU Time (ms)     Peak Memory (KB)
+----------------------------------------------------------------
+Cycle          10           0                 6732
+Cycle          100          0                 6740
+Cycle          500          1                 6764
+Cycle          1000         7                 6764
+
+Complete       10           0                 6776
+Complete       100          0                 6744
+Complete       500          7                 6776
+Complete       1000         31                6720
+
+Empty          10           0                 6712
+Empty          100          0                 6732
+Empty          500          0                 6720
+Empty          1000         0                 6764
+
+
+Performance Observations
+------------------------
+
+The complete graph showed the largest increase in CPU time as the vertices increased. At 1000 vertices, the complete graph required 31 ms, compared to 7ms for the cycle graph and less than 1ms for the empty.
+
+This is expected because the complete graph contains more edges. As the vertices increase the number of edges grow much faster in a complete graph vs cycle graph.
+
+The cycle graph also showed an increase in CPU time as its size increased, but the increase was smaller for the complete graph.
+
+The empty graph was the fastest because there is no edges. Connected components search will still visit every vertex, but there is no neighboring vertices to traverse.
+
+Sample Output
+-------------
+
+Example: Cycle Graph with 1000 vertices
+
+------------------------------------------
+Cycle Graph
+Vertices: 1000
+------------------------------------------
+Connected components: 1
+Contains cycle: Yes
+Reachable vertices from 0: 1000
+CPU time: 7 milliseconds
+
+
+Example: Complete Graph with 1000 vertices
+
+------------------------------------------
+Complete Graph
+Vertices: 1000
+------------------------------------------
+Connected components: 1
+Contains cycle: Yes
+Reachable vertices from 0: 1000
+CPU time: 31 milliseconds
+
+
+Example: Empty Graph with 1000 vertices
+
+------------------------------------------
+Empty Graph
+Vertices: 1000
+------------------------------------------
+Connected components: 1000
+Contains cycle: No
+Reachable vertices from 0: 1
+CPU time: 0 milliseconds
