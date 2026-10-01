@@ -1,12 +1,13 @@
 #include "graph_operations.h"
 #include "graph_simulator.h"
 
+#include <ctime>
 #include <iostream>
 #include <map>
 #include <string>
 #include <vector>
 
-// Tests one generated graph
+
 void testGraph(const std::string& name, Graph& graph) {
 
     std::cout << "\n==============================\n";
@@ -14,58 +15,120 @@ void testGraph(const std::string& name, Graph& graph) {
     std::cout << "Vertices: " << graph.vertexCount() << "\n";
     std::cout << "==============================\n";
 
+    // Start measuring CPU time
+    std::clock_t start = std::clock();
+
     // Test connected components
     std::vector<std::vector<int>> components =
         connectedComponents(graph);
 
+    // Test cycle detection
+    std::vector<int> cycle =
+        oneCycle(graph);
+
+    // Test shortest paths
+    std::map<int, std::vector<int>> paths;
+
+    if (graph.vertexCount() > 0) {
+        paths = shortestPaths(graph, 0);
+    }
+
+    // Stop measuring CPU time
+    std::clock_t end = std::clock();
+
+    double cpuTime =
+        1000.0 * (end - start) / CLOCKS_PER_SEC;
+
+    // Print results
     std::cout << "Connected components: "
               << components.size() << "\n";
 
-    // Test cycle detection
-    std::vector<int> cycle = oneCycle(graph);
+    std::cout << "Contains cycle: "
+              << (cycle.empty() ? "No" : "Yes")
+              << "\n";
 
-    if (cycle.empty()) {
-        std::cout << "Contains cycle: No\n";
-    } else {
-        std::cout << "Contains cycle: Yes\n";
-    }
+    std::cout << "Reachable vertices from 0: "
+              << paths.size() << "\n";
 
-    // Test shortest paths from vertex 0
-    if (graph.vertexCount() > 0) {
-
-        std::map<int, std::vector<int>> paths =
-            shortestPaths(graph, 0);
-
-        std::cout << "Reachable vertices from 0: "
-                  << paths.size() << "\n";
-    }
+    std::cout << "CPU time: "
+              << cpuTime
+              << " milliseconds\n";
 }
 
-int main() {
 
-    // Test a cycle graph
-    Graph cycleGraph = generateCycleGraph(10);
+int main(int argc, char* argv[]) {
 
-    testGraph(
-        "Cycle Graph (n = 10)",
-        cycleGraph
-    );
+    // Run one experiment if graph type and size are provided
+    if (argc == 3) {
 
-    // Test a complete graph
-    Graph completeGraph = generateCompleteGraph(10);
+        std::string graphType = argv[1];
+        int n = std::stoi(argv[2]);
 
-    testGraph(
-        "Complete Graph (n = 10)",
-        completeGraph
-    );
+        if (graphType == "cycle") {
 
-    // Test an empty graph
-    Graph emptyGraph = generateEmptyGraph(10);
+            Graph graph = generateCycleGraph(n);
+            testGraph("Cycle Graph", graph);
 
-    testGraph(
-        "Empty Graph (n = 10)",
-        emptyGraph
-    );
+        } else if (graphType == "complete") {
+
+            Graph graph = generateCompleteGraph(n);
+            testGraph("Complete Graph", graph);
+
+        } else if (graphType == "empty") {
+
+            Graph graph = generateEmptyGraph(n);
+            testGraph("Empty Graph", graph);
+
+        } else {
+
+            std::cout << "Unknown graph type.\n";
+            return 1;
+        }
+
+        return 0;
+    }
+
+    // Run all experiments
+    std::vector<int> sizes = {
+        10,
+        100,
+        500,
+        1000
+    };
+
+    for (int n : sizes) {
+
+        std::cout << "\n\n######## SIZE "
+                  << n
+                  << " ########\n";
+
+        // Cycle graph
+        Graph cycleGraph =
+            generateCycleGraph(n);
+
+        testGraph(
+            "Cycle Graph",
+            cycleGraph
+        );
+
+        // Complete graph
+        Graph completeGraph =
+            generateCompleteGraph(n);
+
+        testGraph(
+            "Complete Graph",
+            completeGraph
+        );
+
+        // Empty graph
+        Graph emptyGraph =
+            generateEmptyGraph(n);
+
+        testGraph(
+            "Empty Graph",
+            emptyGraph
+        );
+    }
 
     return 0;
 }

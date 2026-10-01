@@ -1,0 +1,44 @@
+Assignment 1 Results 
+---------------------
+
+Graph Type 
+-----------
+
+In this assignment, I created an undirect graph using an adjacency list. The graph is sotred as a vector of vector of ints. Each position in the outer vector represents a vertex, and the inner store the vertices that are adjacent to the vertex.
+
+Because the graph is undirected, adding an edge between the vertices u and v adds v to the adj list of u and thsi works for u as well.
+
+I used adj list because its a simple way to store and traverse the neighbors of each vertex.
+
+Graph Operations
+----------------
+
+connectedComponents:
+Connected components are found using dfs. The algorithm starts from every vertex that has ont alreadybeen visited. Each DFS produces one connected component.
+
+oneCycle:
+A cycle is found using DFS. During the search, the algorithm keeps track fo ach vertex's parent. If the search fidns a visted vertex that is not the current parent a cycle is found.
+
+shortestPahts:
+Shortest Paths are found using Dijkstra's algorithm. Since the graph is unweighted, every edge has the same weight of 1. The algorithm stores the current distance to each vertex and uses a priority queue to process vertices.
+
+Experiments 
+------------
+
+I tested three types of undirected graphs
+
+1. Cycle Graph 
+    Each vertex is connected in a cycle and the final vertex connects to the first 
+
+2. Complete Graph
+    Every vertex is connect to each other 
+
+3. Empty Graph
+    The graph contains vertices but no edges
+
+
+Graph size tested:
+10 verticies
+100 verticies
+500 verticies
+1000 verticies
